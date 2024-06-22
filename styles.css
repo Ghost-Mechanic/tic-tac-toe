@@ -72,3 +72,9 @@ body {
 .box:hover {
     cursor: default;
 }
+
+.restart {
+    border-radius: 16px;
+    border: 1px solid black;
+    background-color: white;
+}

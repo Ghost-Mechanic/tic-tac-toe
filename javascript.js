@@ -129,6 +129,8 @@ const gameBoard = (function () {
     return {createBoard, getBoard, makePlay, checkWin, checkTie};
 })();
 
+// this function starts the game given both player names, used both to 
+// start the game at the beginning and to restart the game
 function startGame(playerOneName, playerTwoName) {
     playerOne = createPlayer(playerOneName, "X");
     playerTwo = createPlayer(playerTwoName, "O");
@@ -136,7 +138,6 @@ function startGame(playerOneName, playerTwoName) {
     document.querySelector(".turn").style.display = "block";
 
     const turnDisplay = document.querySelector(".player");
-    const boxes = document.querySelectorAll(".box");
 
     // initialize textContent on the turnDisplay element to player 1
     turnDisplay.textContent = `${playerOneName}'s (X)`;
@@ -147,6 +148,7 @@ function startGame(playerOneName, playerTwoName) {
     gameBoard.createBoard();
 
     boxes.forEach((box) => {
+        box.textContent = "";
         box.addEventListener("click", handleBoxClick);
     });
 }
@@ -165,6 +167,9 @@ const namesDialog = document.querySelector(".player-names");
 // initialize global variable for the boxes class
 const boxes = document.querySelectorAll(".box");
 
+// initialize variable for restart button element
+const restartButton = document.querySelector(".restart");
+
 let playerOneNameField = document.querySelector("#player-one");
 let playerTwoNameField = document.querySelector("#player-two");
 
@@ -177,6 +182,11 @@ submitNames.addEventListener("click", (event) => {
     namesDialog.close();
 
     startGame(playerOneName, playerTwoName);
+
+    // program restart button after names have been submitted
+    restartButton.addEventListener("click", () => {
+        startGame(playerOneName, playerTwoName);
+    });
 });
 
 
