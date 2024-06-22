@@ -7,6 +7,19 @@
     <title>Tic-Tac-Toe</title>
 </head>
 <body>
+    <dialog class="player-names" open>
+        <form action="" class="names-form" method="dialog">
+            <div class="player-one-box">
+                <label for="player-one">Player 1 (X) Name:</label>
+                <input type="text" id="player-one">
+            </div>
+            <div class="player-two-box">
+                <label for="player-two">Player 2 (O) Name:</label>
+                <input type="text" id="player-two">
+            </div>
+            <button type="submit" id="names-submit">Submit Names</button>
+        </form>
+    </dialog>
     <div class="main">
         <h1 class="title">Tic-Tac-Toe</h1>
         <h3 class="turn">It is <span class="player"></span> turn</h3>

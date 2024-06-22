@@ -129,23 +129,54 @@ const gameBoard = (function () {
     return {createBoard, getBoard, makePlay, checkWin, checkTie};
 })();
 
-const playerOne = createPlayer("Player 1", "X");
-const playerTwo = createPlayer("Player 2", "O");
+function startGame(playerOneName, playerTwoName) {
+    playerOne = createPlayer(playerOneName, "X");
+    playerTwo = createPlayer(playerTwoName, "O");
 
-const turnDisplay = document.querySelector(".player");
+    document.querySelector(".turn").style.display = "block";
+
+    const turnDisplay = document.querySelector(".player");
+    const boxes = document.querySelectorAll(".box");
+
+    // initialize textContent on the turnDisplay element to player 1
+    turnDisplay.textContent = `${playerOneName}'s (X)`;
+
+    // initialize currPlayer to 0, which is player 1
+    currPlayer = 0;
+
+    gameBoard.createBoard();
+
+    boxes.forEach((box) => {
+        box.addEventListener("click", handleBoxClick);
+    });
+}
+
+// initialize global variables for player objects and currPlayer tracker
+let playerOne;
+let playerTwo;
+let currPlayer;
+
+document.querySelector(".turn").style.display = "none";
+
+// initialize variables for elements for the player names dialog
+const submitNames = document.querySelector("#names-submit");
+const namesDialog = document.querySelector(".player-names");
+
+// initialize global variable for the boxes class
 const boxes = document.querySelectorAll(".box");
 
-// initialize textContent on the turnDisplay element to player 1
-turnDisplay.textContent = "Player 1's (X)";
+let playerOneNameField = document.querySelector("#player-one");
+let playerTwoNameField = document.querySelector("#player-two");
 
-// initialize currPlayer to 0, which is player 1
-let currPlayer = 0;
+// make dialog form work by submitting with a button to create player names
+submitNames.addEventListener("click", (event) => {
+    event.preventDefault();
 
-gameBoard.createBoard();
+    let playerOneName = playerOneNameField.value;
+    let playerTwoName = playerTwoNameField.value;
+    namesDialog.close();
 
-boxes.forEach((box) => {
-    box.addEventListener("click", handleBoxClick);
+    startGame(playerOneName, playerTwoName);
 });
-
 
 
