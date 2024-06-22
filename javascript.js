@@ -5,6 +5,86 @@ function printBoard(gameBoard) {
     console.log(`${gameBoard[6]}|${gameBoard[7]}|${gameBoard[8]}`);
 }
 
+// this factory function creates a player object given their name and piece
+function createPlayer(name, piece) {
+    return {name, piece};
+}
+
+// this function returns an object to handle changes to the DOM
+function handleDOM(box, player, gameBoard) {
+    const turnDisplay = document.querySelector(".player");
+    const endDisplay = document.querySelector(".game-over");
+
+    // change the display above the board telling the player who's turn it is
+    const changeTurnDisplay = () => {
+        if (turnDisplay.textContent == `${playerOne.name}'s (X)`) {
+            turnDisplay.textContent = `${playerTwo.name}'s (O)`;
+        }
+        else if (turnDisplay.textContent == `${playerTwo.name}'s (O)`) {
+            turnDisplay.textContent = `${playerOne.name}'s (X)`;
+        }
+    }
+
+    const changeBoxPiece = () => {
+        box.textContent = player.piece;
+    }
+
+    // change ending display based on winning player and conditions,
+    // whether or not the game was won or tied
+    const gameEnding = () => {
+        if (gameBoard.checkWin()) {
+            endDisplay.textContent = `${player.name} has won!`;
+            disableBoxes();
+        }
+        else if (gameBoard.checkTie()) {
+            endDisplay.textContent = "It's a tie!";
+        }
+    }
+
+    return {changeTurnDisplay, changeBoxPiece, gameEnding};
+}
+
+// this function handles the click of each box in the board, changing the DOM and array
+function handleBoxClick(e) {
+    const box = e.currentTarget;
+    let userChoice = box.dataset.index;
+
+    // make the play with the correct piece based on who's turn it is
+    if (currPlayer % 2 == 0) {
+        gameBoard.makePlay(userChoice, playerOne.piece);
+    }
+    else {
+        gameBoard.makePlay(userChoice, playerTwo.piece); 
+    }
+
+    let DOM;
+
+    // pass in parameters properly depending on current player
+    if (currPlayer % 2 == 0) {
+        DOM = handleDOM(box, playerOne, gameBoard);
+    }
+    else {
+        DOM = handleDOM(box, playerTwo, gameBoard);
+    }
+
+    // call DOM functions to update board
+    DOM.changeBoxPiece();
+    DOM.gameEnding();
+    DOM.changeTurnDisplay();
+
+    // increment currPlayer to alternate between players
+    ++currPlayer;
+
+    box.removeEventListener("click", handleBoxClick);
+}
+
+// this function disables the box clicks for when the game is over
+function disableBoxes() {
+    boxes.forEach((box) => {
+        box.removeEventListener("click", handleBoxClick);
+    });
+}
+
 // this IIFE creates a gameboard with the functions of creating a new board,
 // accessing the current board, making a play, and checking if there is a win or a tie
 const gameBoard = (function () {
@@ -38,7 +118,7 @@ const gameBoard = (function () {
     // check if there is a tie by checking if the board is full
     const checkTie = () => {
         for (let i = 0; i < board.length; ++i) {
-            if (board[i] != "O" || board[i] != "X") {
+            if (board[i] != "O" && board[i] != "X") {
                 return false;
             }  
         }
@@ -49,63 +129,23 @@ const gameBoard = (function () {
     return {createBoard, getBoard, makePlay, checkWin, checkTie};
 })();
 
-// this factory function creates a player object given their name and piece
-function createPlayer(name, piece) {
-    return {name, piece};
-}
+const playerOne = createPlayer("Player 1", "X");
+const playerTwo = createPlayer("Player 2", "O");
 
-const X = createPlayer("Player 1", "X");
-const O = createPlayer("Player 2", "O");
+const turnDisplay = document.querySelector(".player");
+const boxes = document.querySelectorAll(".box");
+
+// initialize textContent on the turnDisplay element to player 1
+turnDisplay.textContent = "Player 1's (X)";
+
+// initialize currPlayer to 0, which is player 1
+let currPlayer = 0;
 
 gameBoard.createBoard();
 
-// decide starting player at random
-let currPlayer = Math.floor(Math.random() * 2);
-
-console.log(currPlayer);
-
-let userChoice = 0;
-
-// this while loop plays the game, and runs as long as the game has not been won
-while (!gameBoard.checkWin() && !gameBoard.checkTie()) {
-    // alternate players with an if statement 
-    if (currPlayer % 2 == 0) {
-        console.log("It is X's turn");
-    }
-    else {
-        console.log("It is O's turn");
-    }
-
-    if (currPlayer % 2 == 0) {
-        gameBoard.makePlay(userChoice, X.piece);
-    }
-    else {
-        gameBoard.makePlay(userChoice, O.piece); 
-    }
-
-    printBoard(gameBoard.getBoard());
-
-    if (gameBoard.checkWin()) {
-        if (currPlayer % 2 == 0) {
-            console.log(`${X.name} has won!`);
-            break;
-        }
-        else {
-            console.log(`${O.name} has won!`);
-            break;
-        }
-    }
-    else if (gameBoard.checkTie()) {
-        console.log("It was a tie!");
-        break;
-    }
-
-    // increment currPlayer to alternate between players
-    ++currPlayer;
-
-    // increment user choice for testing, player 2 always wins
-    ++userChoice;
-}
+boxes.forEach((box) => {
+    box.addEventListener("click", handleBoxClick);
+});
 
 
 
